@@ -7,7 +7,7 @@ import cvxpy as cp
 #              https://doi.org/10.1109/TCST.2012.2237346
 
 # Discrete steps
-N = 250
+N = 120
 
 # The time of vehicle to land
 t_f = cp.Parameter(shape=1, name="t_f", nonneg=True)
@@ -47,12 +47,16 @@ z_u = cp.Parameter(shape=(1, N), name="z_u")
 # exp_z0 = cp.Parameter(shape=(1, N), name="exp_z0")
 
 # rho_1 * exp(-z0)
-# Always nonnegative because rho_1 >= 0, and 1/mass >= 0
-mu_1 = cp.Parameter(shape=(1, N), name="rho_1_exp_z_0",nonneg=True)
+# Always non-negative because rho_1 >= 0, and 1/mass >= 0
+mu_1 = cp.Parameter(shape=(1, N), name="mu_1", nonneg=True)
 # rho_2 * exp(-z0)
-mu_2 = cp.Parameter(shape=(1, N), name="rho_2_exp_z_0",nonneg=True)
+mu_2 = cp.Parameter(shape=(1, N), name="mu_2", nonneg=True)
+# rho_1 * exp(-z0) * z0
+mu_1_z_0 = cp.Parameter(shape=(1, N), name="mu_1_z_0")
 # rho_2 * exp(-z0) * z0
-mu_2_z_0 = cp.Parameter(shape=(1, N), name="rho_2_exp_z_0_z_0")
+mu_2_z_0 = cp.Parameter(shape=(1, N), name="mu_2_z_0")
+# rho_2 * exp(-z0) * z0 ^ 2
+mu_2_square_z_0 = cp.Parameter(shape=(1, N), name="mu_2_square_z_0")
 
 # Glideslope cone angle
 # gamma_gs = cp.Parameter(shape=1, name="gamma_gs")
@@ -63,7 +67,7 @@ gamma_gs_cot = cp.Parameter(shape=1, name="gamma_gs_cot")
 # from the thrust unit vector
 # theta = cp.Parameter(shape=1, name="theta")
 # Use the precalculated cosine
-theta_cos = cp.Parameter(shape=1, name="theta_cos", nonneg=True)
+theta_cos = cp.Parameter(shape=1, name="theta_cos")
 
 # Maximum allowable velocity
 v_max = cp.Parameter(shape=1, name="v_max", nonneg=True)

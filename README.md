@@ -4,6 +4,8 @@ An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L
 ![Photo: SpaceX](doc/fh_demo.jpg)
 *Side boosters landing on the pads. Falcon Heavy Demo Mission, 2018. (Photo: SpaceX)*
 
+![Commit](https://img.shields.io/github/last-commit/CuNO3/gfold-py/main)
+![Language](https://img.shields.io/github/languages/top/CuNO3/gfold-py)
 ![License](https://img.shields.io/github/license/CuNO3/gfold-py)
 
 Copyright (C) 2022-present Unili (aka CuNO3). All rights reserved.  
@@ -14,7 +16,7 @@ Licensed under the Apache License, Version 2.0.
 - cvxpy 1.3.2
 - cvxpygen (when generating C code) 0.2.3
 
-**Do not use python > 3.9 or you may met compatiblility problems**  
+**Do not use python > 3.9, or you may meet compatibility problems**  
 
 Personally, I recommend using [`Miniconda`](https://docs.conda.io/en/latest/miniconda.html) to manage your python environment.  
 
