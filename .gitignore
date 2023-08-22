@@ -1,0 +1,12 @@
+__pycache__
+.vscode
+.idea
+
+prob3
+prob4
+
+prob3_test.txt
+prob4_test.txt
+
+prob3_test_*.txt
+prob4_test_*.txt
