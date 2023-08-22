@@ -1,7 +1,13 @@
 # `G-FOLD Python`
 An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L**arge **D**iverts) in `python` with `cvxpy`.
 
-![Photo: SpaceX](doc/fh_demo.jpg)
+## **WARNING: This project is still under development**
+### **The current version may not work properly. It always indicates that the problem is infeasible, and the constraints are not correctly handled.**
+### **The estimated time of completion is February 2024.**
+### **You can also use [thisisneal/G-FOLD](https://github.com/thisisneal/G-FOLD) (in MATLAB), [jonnyhyman/G-FOLD-Python](https://github.com/jonnyhyman/G-FOLD-Python), fork one of the current implementations or start your own implementation.**
+---
+
+![SpaceX FH Landing](doc/fh_demo.jpg)
 *Side boosters landing on the pads. Falcon Heavy Demo Mission, 2018. (Photo: SpaceX)*
 
 ![Commit](https://img.shields.io/github/last-commit/CuNO3/gfold-py/main)
@@ -10,6 +16,17 @@ An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L
 
 Copyright (C) 2022-present Unili (aka CuNO3). All rights reserved.  
 Licensed under the Apache License, Version 2.0.
+
+## TODO
+- [ ] Fix the problem of infeasibility
+- [ ] Fix the incorrect SOC constraints
+- [ ] Check the correctness of the constraints
+- [ ] Cleaning the code
+- [ ] Add more comments
+- [ ] Add more test cases
+- [ ] Complete refactoring of the code
+
+The estimated time of completion is February 2024.
 
 ## Requirements
 - Python 3.9
