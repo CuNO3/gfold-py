@@ -2,7 +2,7 @@
 An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L**arge **D**iverts) in `python` with `cvxpy`.
 
 ## **WARNING: This project is still under development**
-### **The current version may not work properly. It always indicates that the problem is infeasible, and the constraints are not correctly handled.**
+### **The current version may not work properly. It always indicates that the problem is infeasible.**
 ### **The estimated time of completion is February 2024.**
 ### **You can also use [thisisneal/G-FOLD](https://github.com/thisisneal/G-FOLD) (in MATLAB), [jonnyhyman/G-FOLD-Python](https://github.com/jonnyhyman/G-FOLD-Python), fork one of the current implementations or start your own implementation.**
 ---
