@@ -7,7 +7,7 @@ import cvxpy as cp
 #              https://doi.org/10.1109/TCST.2012.2237346
 
 # Discrete steps
-N = 120
+N = 160
 
 # The time of vehicle to land
 t_f = cp.Parameter(shape=1, name="t_f", nonneg=True)
@@ -55,8 +55,8 @@ mu_2 = cp.Parameter(shape=(1, N), name="mu_2", nonneg=True)
 mu_1_z_0 = cp.Parameter(shape=(1, N), name="mu_1_z_0")
 # rho_2 * exp(-z0) * z0
 mu_2_z_0 = cp.Parameter(shape=(1, N), name="mu_2_z_0")
-# rho_2 * exp(-z0) * z0 ^ 2
-mu_2_square_z_0 = cp.Parameter(shape=(1, N), name="mu_2_square_z_0")
+# rho_1 * exp(-z0) * z0 ^ 2
+mu_1_square_z_0 = cp.Parameter(shape=(1, N), name="mu_2_square_z_0")
 
 # Glideslope cone angle
 # gamma_gs = cp.Parameter(shape=1, name="gamma_gs")

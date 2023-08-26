@@ -12,3 +12,7 @@ prob3_test_*.txt
 prob4_test_*.txt
 
 gfold_example_*.py
+gfold_mtcl.py
+
+gfold_exec.py
+gfold_exec_*.py

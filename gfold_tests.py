@@ -2,7 +2,7 @@
 
 # Turn it to False when production
 test = [
-    False,  # Test the problem
+    True,  # Test the problem
     False,  # Test the constraints
     False,  # Test the parameters
     False,  # Test the variables

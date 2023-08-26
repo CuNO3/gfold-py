@@ -110,18 +110,20 @@ def con() -> list:
             + prm.mu_2_z_0[0, k]
         )
 
-        # SOC lower bound
-        # Well...IDK how to trans a taylor expansion to SOC... :(
+        # Quadratic lower bound
         # ρ1 * e ^ −z0 * ( 1 - ( z(t) - z0(t) ) + ( z(t) - z0(t) ) ^ 2 / 2 ] <= s(t)
+        # Equals to μ1 * (1 - z + z^2/2 ) + μ1 * z0^2/2 + μ1 * z0 - μ1 *z*z0
         cons.append(
             prm.mu_1[0, k]
             * (
-                    1 - var.z[0, k] +
-                    cp.square(var.z[0, k]) / 2
+                    1 
+                    - var.z[0, k]
+                    + cp.square(var.z[0, k]) / 2
+                    #+ cp.quad_over_lin(var.z[0, k], 2)
             )
             + prm.mu_1_z_0[0, k]
-            + prm.mu_1_z_0[0, k] * var.z[0, k]
-            + prm.mu_2_square_z_0[0, k] / 2
+            - prm.mu_1_z_0[0, k] * var.z[0, k]
+            + prm.mu_1_square_z_0[0, k] / 2
             <= var.s[0, k]
         )
 
@@ -173,7 +175,7 @@ if tst.test[0]:
     print("Problem type:")
     print("DCP:", prob3.is_dcp())
     print("DPP:", prob3.is_dpp())
-    print("QP:", prob3.is_qp())
+    print("DQCP:", prob3.is_dqcp())
     print("---------------------")
     if tst.test[4]:
         with open("prob3_test.txt", "w") as f:
