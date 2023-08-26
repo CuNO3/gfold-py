@@ -17,9 +17,12 @@ An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L
 Copyright (C) 2022-present Unili (aka CuNO3). All rights reserved.  
 Licensed under the Apache License, Version 2.0.
 
+## Disclaimer
+`G-FOLD Python` is designed for **DEMONSTRATION PURPOSES**. The developers **CANNOT GUARANTEE THE ALGORITHM WILL WORK AS EXPECTED**. The developers **SHALL NOT BE RESPONSIBLE FOR ANY LOSSES AND/OR DAMAGES DUE TO THE USAGE OF THE ALGORITHM**.
+
 ## TODO
 - [ ] Fix the problem of infeasibility
-- [ ] Fix the incorrect SOC constraints
+- [X] Fix the incorrect SOC constraints (Partitially solved)
 - [ ] Check the correctness of the constraints
 - [ ] Cleaning the code
 - [ ] Add more comments
