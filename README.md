@@ -2,13 +2,11 @@
 An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L**arge **D**iverts) in `python` with `cvxpy`.
 
 ## **WARNING: This project is still under development**
-### **The current version may not work properly. It may always indicates that the problem is infeasible.**
-### **The estimated time of completion is February 2024.**
-### **You can also use [thisisneal/G-FOLD](https://github.com/thisisneal/G-FOLD) (in MATLAB), [jonnyhyman/G-FOLD-Python](https://github.com/jonnyhyman/G-FOLD-Python), fork one of the current implementations or start your own implementation.**
+### Currently, gfold-py is being completely rewritten. The rewritten process will be finished as est. 2024.2.
 ---
 
 ![SpaceX FH Landing](doc/fh_demo.jpg)
-*Side boosters landing on the pads. Falcon Heavy Demo Mission, 2018. (Photo: SpaceX)*
+*Side boosters landing on the pads. Falcon Heavy Demo Mission, 2018. (Credit: SpaceX)*
 
 ![Commit](https://img.shields.io/github/last-commit/CuNO3/gfold-py/main)
 ![Language](https://img.shields.io/github/languages/top/CuNO3/gfold-py)
@@ -21,13 +19,10 @@ Licensed under the Apache License, Version 2.0.
 `G-FOLD Python` is designed for **DEMONSTRATION PURPOSES**. The developers **CANNOT GUARANTEE THE ALGORITHM WILL WORK AS EXPECTED**. The developers **SHALL NOT BE RESPONSIBLE FOR ANY LOSSES AND/OR DAMAGES DUE TO THE USAGE OF THE ALGORITHM**.
 
 ## TODO
-- [ ] Fix the problem of infeasibility
-- [X] Fix the incorrect SOC constraints (Partitially solved)
-- [ ] Check the correctness of the constraints
+- [ ] Rewritten
 - [ ] Cleaning the code
 - [ ] Add more comments
 - [ ] Add more test cases
-- [ ] Complete refactoring of the code
 
 The estimated time of completion is February 2024.
 
@@ -40,22 +35,16 @@ The estimated time of completion is February 2024.
 
 Personally, I recommend using [`Miniconda`](https://docs.conda.io/en/latest/miniconda.html) to manage your python environment.  
 
-**Warning**: `Conda` environment **may not work well with `cvxpy`**, especially the solver part. Sometimes you may receive a `SolverError` even if you have correctly installed the solver.  
-
 About how to install `cvxpy` in `Conda` environment, please refer to [this page](https://www.cvxpy.org/install/index.html#conda).
 
 
 
 ## Usage
-- `gfold_exec.py` Directly execute the cvxpy ECOS solver
-- `gfold_exec_scs.py` Directly execute the cvxpy SCS solver
-- `gfold_cgen.py` Generate C code of two problems with `cvxpygen`
-- `gfold_plot.py` Used for testing the generated trajectories
-- `gfold_params.py` Non executable, the g-fold parameters
-- `gfold_vars.py` Non executable, the g-fold variables
-- `gfold_prob3.py` Non executable, definition of problem 3
-- `gfold_prob4.py` Non executable, definition of problem 4
-- `gfold_tests.py` Non executable, test cases and auxiliary debug functions
+- `solve_ecos.py` Solve the problem using the ecos solver
+- `solve_scs.py` Solve the problem using the scs solver
+- `solve_osqp.py` Solve the problem using the osqp solver
+- `problem3.py` Defined the problem 3.
+- `variables.py` Defined the variable of the problem
 
 ## References
 ["Lossless Convexification of Non-Convex Control Bound and Pointing Constraints of the Soft Landing Optimal Control Problem ."](https://doi.org/10.1109/TCST.2012.2237346)  
