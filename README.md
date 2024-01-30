@@ -18,7 +18,8 @@ Licensed under the Apache License, Version 2.0.
 `G-FOLD Python` is designed for **DEMONSTRATION PURPOSES**. The developers **CANNOT GUARANTEE THE ALGORITHM WILL WORK AS EXPECTED**. The developers **SHALL NOT BE RESPONSIBLE FOR ANY LOSSES AND/OR DAMAGES DUE TO THE USAGE OF THE ALGORITHM**.
 
 ## TODO
-- [ ] Rewritten
+- [ ] Solve the infeasible problem
+- [X] Rewritten
 - [ ] Cleaning the code
 - [ ] Add more comments
 - [ ] Add more test cases
