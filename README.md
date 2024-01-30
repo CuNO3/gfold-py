@@ -1,8 +1,7 @@
 # `G-FOLD Python`
 An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L**arge **D**iverts) in `python` with `cvxpy`.
 
-## **WARNING: This project is still under development**
-### Currently, gfold-py is being completely rewritten. The rewritten process will be finished as est. 2024.2.
+## **WARNING: This project is deprecated due to infeasible result caused by unknown reason and an issue of cvxpygen caused generation of UTF-8 character (which cannot be recognized by GCC) in C header.**
 ---
 
 ![SpaceX FH Landing](doc/fh_demo.jpg)
