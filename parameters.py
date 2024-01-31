@@ -38,8 +38,9 @@ g = cp.Parameter(shape=3, name="g")
 
 # Initial mass and final mass
 # Equals to m_wet
-m_0 = cp.Parameter(shape=1, name="m_0")
+m_wet = cp.Parameter(shape=1, name="m_0")
 # Final mass
+m_0 = cp.Parameter(shape=1, name="m_0")
 m_f = cp.Parameter(shape=1, name="m_f")
 
 # Mass depletion / fuel comsumption constant
@@ -79,7 +80,7 @@ theta_cos = cp.Parameter(shape=1, name="theta_cos")
 # Glidescope cone constraint
 # Where 0 < gamma_gs < pi/2
 # gamma_gs = cp.Parameter(shape=1, name="gamma_gs", nonneg=True)
-gamma_gs_tan = cp.Parameter(shape=1, name="gamma_gs_tan")
+gamma_gs_tan = cp.Parameter(shape=1, name="gamma_gs_tan", nonneg=True)
 
 # Rho_1 * exp(-z_0)
 rho_1_exp_z_0 = cp.Parameter(shape=(1, N), name="rho_1_exp_z_0", nonneg=True)
@@ -103,3 +104,4 @@ z_u = cp.Parameter(shape=(1, N), name="z_u")
 t_f_A = cp.Parameter(shape=(6,6), name="t_f_A")
 t_f_B = cp.Parameter(shape=(6,3), name="t_f_B")
 t_f_B_g = cp.Parameter(shape=(6,3), name="t_f_B_g")
+E_q = cp.Parameter(shape=(2,3), name="E_q")

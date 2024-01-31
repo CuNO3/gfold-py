@@ -2,6 +2,7 @@
 An implementation of G-FOLD (**G**uidance algorithm for **F**uel **O**ptimal **L**arge **D**iverts) in `python` with `cvxpy`.
 
 ## **WARNING: This project is deprecated due to infeasible result caused by unknown reason and an issue of cvxpygen caused generation of UTF-8 character (which cannot be recognized by GCC) in C header.**
+### The project was originally built for solving this problem with native C / CPP code using CVXPYGEN. It's now closed because the idea has proved on a other  project.
 ---
 
 ![SpaceX FH Landing](doc/fh_demo.jpg)
@@ -36,8 +37,6 @@ The estimated time of completion is February 2024.
 Personally, I recommend using [`Miniconda`](https://docs.conda.io/en/latest/miniconda.html) to manage your python environment.  
 
 About how to install `cvxpy` in `Conda` environment, please refer to [this page](https://www.cvxpy.org/install/index.html#conda).
-
-
 
 ## Usage
 - `solve_ecos.py` Solve the problem using the ecos solver

@@ -26,7 +26,7 @@ B = np.block([ [np.zeros((3, 3))], [np.eye(3)] ])
 m_wet = 2300
 rho_1 = 24000 * 0.1
 rho_2 = 24000 * 0.9
-theta_cos = np.cos(np.radians(15))
+theta_cos = np.cos(np.radians(120))
 gamma_gs_tan = np.tan(np.radians(45))
 alpha = 5 * 0.0001
 v_max = 120
@@ -61,7 +61,7 @@ par.v_max.value=np.array([v_max])
 par.t_f.value = np.array([t_f])
 par.m_f.value = np.array([m_f])
 par.g.value = g
-par.m_0.value = np.array([m_wet])
+par.m_wet.value = np.array([m_wet])
 par.alpha.value = np.array([alpha])
 par.E.value = E
 par.S.value = S
@@ -70,6 +70,7 @@ par.t_f_A.value = np.array([t_f]) * A
 par.n_hat.value = n_hat
 par.c.value = c
 par.c_q.value = c_q
+par.E_q.value = E * q
 #par.z_0.value = z_0
 #par.z_u.value = z_u
 par.theta_cos.value = np.array([theta_cos])
@@ -82,3 +83,4 @@ par.rho_2_exp_z_0_z_0.value = rho_2_exp_z_0_z_0
 par.t_f_B_g.value = np.array([t_f]) * B * g
 
 prob3.solve(verbose=True, solver=cp.CLARABEL, max_iter=60000)
+#prob3.solve(verbose=True, solver=cp.ECOS)
