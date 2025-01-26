@@ -1,0 +1,21 @@
+[project]
+name = "gfold"
+version = "0.1.0"
+description = "An implementation of G-FOLD (Guidance algorithm for Fuel Optimal Large Diverts) in python with cvxpy"
+authors = [
+    {name = "CuNO3",email = "lizncu.unili@gmail.com"}
+]
+license = "BSD-3-Clause"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "cvxpy (>=1.6.0,<2.0.0)",
+    "numpy (>=2.2.2,<3.0.0)",
+    "clarabel (>=0.9.0,<0.10.0)",
+    "ecos (>=2.0.14,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
