@@ -23,30 +23,10 @@ Licensed under the BSD 3-Clause License.
 - [ ] Line search to determine $t_f$ as described in the original paper
 
 ## Requirements
-- Python 3.9
+- Python 3.10
 - cvxpy 1.3.2
 - ~~cvxpygen (when generating C code) 0.2.3~~
 *\*Will be back sometime in the future*
-
-## Problem
-
-We solves the following optimal control problem:
-$$\begin{gather}
-\min \, \| E \, r(t_f) - q \| \\
-\dot{x}(t) = A(\omega)x(t) + B\left(g + u(t)\right) \quad \forall t \in [0, t_f] \\
-\dot{z}(t) = -\alpha\sigma(t) \quad \forall t \in [0,t_f] \\
-z(0) = m_0 \\
-z(t_f) \ge m_0 - m_f \gt 0 \\
-e^T_1r(t_f) = 0\\
-\dot{r}(t_f) = 0 \\
-\rho_1e^{-z_0}\left[1 - (z(t)-z_0(t)) + \frac{(z(t)-z_0(t))^2}{2}\right] \le \sigma(t) \\
-\sigma(t) \le \rho_2e^{-z_0}\left[1 - (z(t)-z_0(t))\right] \\
-\|u(t)\|\le\sigma(t) \\ 
-\hat{n}^Tu(t) \ge \cos\theta\sigma(t) \\
-\|\dot{r}\|\le V_{max} \\
-\| E(r-r(t_f))\| \le c^T(r-r(t_f))
-\end{gather}$$
-
 
 ## References
 ["Lossless Convexification of Non-Convex Control Bound and Pointing Constraints of the Soft Landing Optimal Control Problem ."](https://doi.org/10.1109/TCST.2012.2237346)  

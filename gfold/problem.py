@@ -47,12 +47,6 @@ class Problem:
         self.theta_cos = cp.Parameter(1, name='theta_cos', nonneg=True)
         self.E = cp.Parameter((2, 3), name='E')
         self.c = cp.Parameter(3, name='c')
-        self.z0 = cp.Parameter((1, N), name='z_0', nonneg=True)
-        self.zc = cp.Parameter((1, N), name='z_c', nonneg=True)
-        self.zl = cp.Parameter((1, N), name='z_l', nonneg=True)
-        self.zq = cp.Parameter((1, N), name='z_q', nonneg=True)
-        self.zul = cp.Parameter((1, N), name='z_ul', nonneg=True)
-        self.zuc = cp.Parameter((1, N), name='z_uc', nonneg=True)
 
         self.cons = []
 
@@ -101,12 +95,13 @@ class Problem:
                 #cp.norm2((self.x[0:3, k] - self.x[0:3,-1])[1:3]) <= self.c @ (self.x[0:3, k] - self.x[0:3,-1])
             ]
 
+            # # Mass-Thrust constraints
             # if k > 0:
             #     self.cons += [
-            #         self.zc[:, k] - self.zl[:, k] * self.z[:, k] + self.zq[:, k] * self.z[:, k]**2 <= self.s[:, k] ,
-            #         self.s[:, k] <= self.zuc[:, k] - self.zul[:, k] *self.z[:, k],
+                    
             #     ]
- 
+
+            
     
     def value(self, r0, q, v0, vf, g, g0, m0, mf, vmax, rho1, rho2, isp, theta, gamma_gs):
         self.r0.value = r0
@@ -121,36 +116,12 @@ class Problem:
         self.vmax.value = np.array([vmax])
         self.rho1.value = np.array([rho1])
         self.rho2.value = np.array([rho2])
-        alpha =  1 / (isp * self.g0)
+        alpha = 1 / (isp * self.g0)
         self.alpha.value = np.array([alpha])
         self.n_hat.value = np.array([1, 0, 0])
-        #assert (np.angle() > 0 and gamma_gs < np.pi/2), 'gamma_gs must be in (0, pi/2)'
         self.theta_cos.value = np.array([np.cos(theta)])
         self.E.value = np.array([[0, 1, 0], [0, 0, 1]])
         self.c.value = np.array([1, 0, 0]) / np.tan(gamma_gs)
-        # Prepare z0
-        z0 = np.zeros((1, self.N))
-        zc = np.zeros((1, self.N))
-        zl = np.zeros((1, self.N))
-        zq = np.zeros((1, self.N))
-        zul = np.zeros((1, self.N))
-        zuc = np.zeros((1, self.N))
-        for k in range(self.N):
-            tmp_z0 = np.log(m0 - alpha * rho2 * k * self.dt)
-            z0[0, k] = tmp_z0
-            tmp_z02 = tmp_z0 ** 2 / 2
-            zc[0, k] = (tmp_z0 + tmp_z02 + 1) * rho1 * np.exp(-tmp_z0)
-            zl[0, k] = (tmp_z0 + 1) * rho1 * np.exp(-tmp_z0)
-            zq[0, k] = rho1 * np.exp(-tmp_z0) / 2
-            zul[0, k] = rho2 * np.exp(-tmp_z0)
-            zuc[0, k] = rho2 * np.exp(-tmp_z0) * (1+tmp_z0)
-        self.z0.value = z0
-        self.zc.value = zc
-        self.zl.value = zl
-        self.zq.value = zq
-        self.zul.value = zul
-        self.zuc.value = zuc
-        
 
     def info(self):
         p = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)

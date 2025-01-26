@@ -29,17 +29,13 @@ p.value(
 # We force the value of alpha to be the same as the one in the original code
 p.alpha.value = np.array([alpha])
 
-# Disable warnings
-import warnings
-warnings.filterwarnings("ignore")
-
 #p.info()
 
 import cvxpy as cp
-(s, x, u, z, s) = p.solve(cp.SCS)
+(s, x, u, z, s) = p.solve(cp.ECOS)
 # print(s)
 print("Optimal value:")
-for k in range(p.N):
+for k  in range(p.N):
     print("x:", x[0:3, k])
     print("v:", x[3:6, k])
     print("u:", u[0:3, k])
@@ -60,7 +56,7 @@ ax = fig.add_subplot(111, projection='3d')
 ax.view_init(elev=20, azim=45)
 ax.plot(x[2, :], x[1, :], x[0, :], linewidth=2)
 
-max_range = 4200  # Use maximum of data or 50
+max_range = 1800  # Use maximum of data or 50
 ax.set_xlim(-max_range, max_range)
 ax.set_ylim(-max_range, max_range)
 ax.set_zlim(0, 3200)
