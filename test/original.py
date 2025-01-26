@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'g
 
 import gfold as gf
 
-r0 = np.array([2400, 450, -330])
+r0 = np.array([2400, 960, -450])
 v0 = np.array([-10,-40,10])
 m0 = 2000
 mf = 300
@@ -35,8 +35,9 @@ warnings.filterwarnings("ignore")
 
 #p.info()
 
-(s, x, u, z, s) = p.solve()
-print(s)
+import cvxpy as cp
+(s, x, u, z, s) = p.solve(cp.SCS)
+# print(s)
 print("Optimal value:")
 for k in range(p.N):
     print("x:", x[0:3, k])
@@ -49,16 +50,27 @@ for k in range(p.N):
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-# In 3D
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(x[2, :], x[1, :], x[0, :])
+# Set DPI for high resolution
+plt.rcParams['figure.dpi'] = 300
 
-max_range = 42  # Use maximum of data or 50
+# In 3D
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+# Set the view angle (elevation, azimuth)
+ax.view_init(elev=20, azim=45)
+ax.plot(x[2, :], x[1, :], x[0, :], linewidth=2)
+
+max_range = 4200  # Use maximum of data or 50
 ax.set_xlim(-max_range, max_range)
 ax.set_ylim(-max_range, max_range)
-ax.set_zlim(0, 420)
+ax.set_zlim(0, 3200)
 
-# Export the plot to a file
-plt.savefig('test/original.png')
+# Add grid and labels
+ax.grid(True)
+ax.set_xlabel('X')
+ax.set_ylabel('Y') 
+ax.set_zlabel('Z')
+
+# Export the plot in high resolution
+plt.savefig('test/original.png', dpi=300, bbox_inches='tight')
 plt.show()

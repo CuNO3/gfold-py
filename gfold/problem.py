@@ -65,12 +65,9 @@ class Problem:
             self.z[:, -1] >= self.m0 - self.mf,
 
             self.x[0, -1] == self.q[0],
-            self.x[3:6, -1] <= self.vf,
+            self.x[3:6, -1] == self.vf,
 
             # Initial thrust equals to 0
-            #self.s[:, 0] == 0,
-            #self.u[:, 0] == np.array([0, 0, 0]),
-
             self.s[:, 0] == 0,
             self.u[:, 0] == np.array([0, 0, 0]),
 
@@ -95,7 +92,7 @@ class Problem:
                 cp.norm2(self.x[3:6, k]) <= self.vmax,
 
                 # Thrust pointing constraint (34)
-                #self.n_hat @ self.u[:, k] >= self.theta_cos * self.s[:, k],
+                self.n_hat @ self.u[:, k] >= self.theta_cos * self.s[:, k],
                 # self.u[:, k] >= self.theta_cos * self.s[:, k],
                 
                 # Cone constraint
@@ -126,7 +123,7 @@ class Problem:
         self.rho2.value = np.array([rho2])
         alpha =  1 / (isp * self.g0)
         self.alpha.value = np.array([alpha])
-        self.n_hat.value = np.array([0, 1, 0])
+        self.n_hat.value = np.array([1, 0, 0])
         #assert (np.angle() > 0 and gamma_gs < np.pi/2), 'gamma_gs must be in (0, pi/2)'
         self.theta_cos.value = np.array([np.cos(theta)])
         self.E.value = np.array([[0, 1, 0], [0, 0, 1]])
@@ -167,9 +164,9 @@ class Problem:
             print(c.is_dcp())
             print(c.is_dcp(dpp = True))
 
-    def solve(self):
+    def solve(self, solver = cp.SCS):
         self.constraints()
         prob = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
-        prob.solve(solver = cp.ECOS, verbose = True)
+        prob.solve(solver, verbose = True)
         return prob.status, self.x.value, self.u.value, self.z.value, self.s.value
         #return prob.status
