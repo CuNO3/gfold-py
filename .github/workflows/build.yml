@@ -34,6 +34,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Users\runneradmin\AppData\Roaming\Python\Scripts", "User")
+        set PATH=%APPDATA%\Python\Scripts;%PATH%
     
     - name: Get current date
       id: date
