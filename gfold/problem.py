@@ -47,6 +47,8 @@ class Problem:
         self.theta_cos = cp.Parameter(1, name='theta_cos', nonneg=True)
         self.E = cp.Parameter((2, 3), name='E')
         self.c = cp.Parameter(3, name='c')
+        
+        self.z0 = cp.Parameter((1, N), name='z_0', nonneg=True)
 
         self.cons = []
 
@@ -55,8 +57,8 @@ class Problem:
             self.x[0:3, 0] == self.r0,
             self.x[3:6, 0] == self.v0,
 
-            self.z[:, 0] == self.m0,
-            self.z[:, -1] >= self.m0 - self.mf,
+            self.z[:, 0] == cp.log(self.m0),
+            self.z[:, -1] >= cp.log(self.m0 - self.mf),
 
             self.x[0, -1] == self.q[0],
             self.x[3:6, -1] == self.vf,
@@ -78,6 +80,7 @@ class Problem:
 
                 # Mass dynamics
                 self.z[:, k+1] == self.z[:, k] - (self.alpha * self.dt * 0.5) * (self.s[:, k] + self.s[:, k+1]),
+                #self.z[:, k+1] == self.z[:, k] - (self.alpha * self.dt) * (self.s[:, k]),
 
                 # Relaxation of control vector (34)
                 cp.norm2(self.u[:, k]) <= self.s[:, k],
@@ -87,23 +90,22 @@ class Problem:
 
                 # Thrust pointing constraint (34)
                 self.n_hat @ self.u[:, k] >= self.theta_cos * self.s[:, k],
-                # self.u[:, k] >= self.theta_cos * self.s[:, k],
                 
                 # Cone constraint
-                #cp.norm2(self.E @ (self.x[0:3, k] - self.q)) <= self.c @ (self.x[0:3, k] - self.q)
                 cp.norm2(self.E @ (self.x[0:3, k] - self.x[0:3,-1])) - self.c @ (self.x[0:3, k] - self.x[0:3,-1]) <= 0
-                #cp.norm2((self.x[0:3, k] - self.x[0:3,-1])[1:3]) <= self.c @ (self.x[0:3, k] - self.x[0:3,-1])
             ]
 
-            # # Mass-Thrust constraints
-            # if k > 0:
-            #     self.cons += [
-                    
-            #     ]
-
+            # Mass-Thrust constraints
+            if k > 0:
+                self.cons += [
+                    self.s[:, k] >= self.rho1 * cp.exp(-self.z0[:, k]) * ( 1 - self.z[:, k] + self.z0[:, k] + cp.square(self.z[:, k] - self.z0[:, k]) / 2),
+                    self.s[:, k] <= self.rho2 * cp.exp(-self.z0[:, k]) * ( 1 - self.z[:, k] + self.z0[:, k] ),
+                ]
+                                                 
             
-    
-    def value(self, r0, q, v0, vf, g, g0, m0, mf, vmax, rho1, rho2, isp, theta, gamma_gs):
+
+
+    def value(self, r0, q, v0, vf, g, g0, m0, mf, vmax, rho1, rho2, alpha, theta, gamma_gs):
         self.r0.value = r0
         self.q.value = q
         self.v0.value = v0
@@ -114,15 +116,22 @@ class Problem:
         self.m0.value = np.array([m0])
         self.mf.value = np.array([mf])
         self.vmax.value = np.array([vmax])
+        assert rho1 < rho2, 'rho1 must be less than rho2'
         self.rho1.value = np.array([rho1])
         self.rho2.value = np.array([rho2])
-        alpha = 1 / (isp * self.g0)
+        # alpha = 1 / (isp * self.g0)
         self.alpha.value = np.array([alpha])
         self.n_hat.value = np.array([1, 0, 0])
         self.theta_cos.value = np.array([np.cos(theta)])
         self.E.value = np.array([[0, 1, 0], [0, 0, 1]])
         self.c.value = np.array([1, 0, 0]) / np.tan(gamma_gs)
 
+        z0 = np.zeros((1, self.N))
+        for k in range(self.N):
+            #z0[0, k] = np.log(m0 - alpha * (rho1 + rho2) * 0.5 * k * self.dt)
+            z0[0, k] = np.log(m0 - alpha * rho2 * k * self.dt)
+        self.z0.value = z0
+        
     def info(self):
         p = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
         print('Problem information:')
@@ -140,4 +149,11 @@ class Problem:
         prob = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
         prob.solve(solver, verbose = True)
         return prob.status, self.x.value, self.u.value, self.z.value, self.s.value
-        #return prob.status
+
+    def problem(self):
+        self.constraints()
+        return cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
+
+    def data(self, solver = cp.ECOS):
+        p = self.problem()
+        return p.get_problem_data(solver)

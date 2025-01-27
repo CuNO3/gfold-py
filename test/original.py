@@ -1,5 +1,8 @@
 import numpy as np
 
+import warnings
+warnings.filterwarnings("ignore")
+
 # Make python happy by adding the path to the gfold module
 import sys
 import os
@@ -8,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'g
 
 import gfold as gf
 
-r0 = np.array([2400, 960, -450])
+r0 = np.array([3200, 1280, -1200])
 v0 = np.array([-10,-40,10])
 m0 = 2000
 mf = 300
@@ -19,16 +22,15 @@ g0 = 9.81
 omega = np.array([2.53*10**-5,0,6.62*10**-5])
 gamma_gs = 45
 
-p = gf.Problem(90, 39, 3)
+p = gf.Problem(96, 81, 3)
 p.constraints()
 p.value(
     r0, np.array([0,0,0]), v0, np.array([0,0,0]),
-    np.array([-3.71,0,0]),g0,m0,mf,90,rho1,rho2,360,
+    np.array([-3.71,0,0]),g0,m0,mf,90,rho1,rho2,alpha,
     120,gamma_gs
 )
-# We force the value of alpha to be the same as the one in the original code
-p.alpha.value = np.array([alpha])
 
+#print(p.data())
 #p.info()
 
 import cvxpy as cp

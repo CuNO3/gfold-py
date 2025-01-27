@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
+      - '*.*.*'
       - 'v*.*.*'
 
 jobs:
@@ -11,7 +12,6 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12"]
@@ -29,27 +29,42 @@ jobs:
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
+    
+    - name: Make Windows happy
+      if: matrix.os == 'windows-latest'
+      run: |
+        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Users\runneradmin\AppData\Roaming\Python\Scripts", "User")
+    
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_OUTPUT
 
-    - name: Build wheels
+    - name: Build artifacts
       run: |
         poetry build
 
-    - name: Store wheels
-      uses: actions/upload-artifact@v3
+    - name: Store artifacts
+      uses: actions/upload-artifact@v4
       with:
         name: wheels-${{ matrix.os }}-py${{ matrix.python-version }}
-        path: dist/*.whl
+        path: |
+          dist/*.whl
+          dist/*.tar.gz
+        if-no-files-found: error
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: dist/*.whl
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
         body: |
-          ## 构建信息
+          ## Release ${{steps.date.outputs.date}}
+          **Warning:** This is an automated release. Please test before using it.
           - OS Version: ${{ matrix.os }}
           - Python Version: ${{ matrix.python-version }}
-          - Build at: $(date +'%Y-%m-%d %H:%M:%S %Z')
+          - Build at: ${{steps.date.outputs.date}}
         draft: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
