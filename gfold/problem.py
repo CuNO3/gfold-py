@@ -1,6 +1,16 @@
 import cvxpy as cp
 import numpy as np
 
+def _ensure_cvxpygen_compat():
+    """Compatibility shim for cvxpygen with cvxpy>=1.6 where upper_tri_to_full moved."""
+    try:
+        import cvxpy.expressions.variable as _cvx_var
+        if not hasattr(_cvx_var, "upper_tri_to_full"):
+            from cvxpy.atoms.affine.upper_tri import upper_tri_to_full as _upper_tri_to_full
+            _cvx_var.upper_tri_to_full = _upper_tri_to_full
+    except (ImportError, AttributeError):
+        pass
+
 class Problem:
     def __init__(self, N, tf, mode):
         # Assertions
@@ -36,6 +46,8 @@ class Problem:
         self.m0 = cp.Parameter(1, name='m_0', nonneg=True)
         # Fuel mass
         self.mf = cp.Parameter(1, name='m_f', nonneg=True)
+        self.log_m0 = cp.Parameter(1, name='log_m_0')
+        self.log_m0_mf = cp.Parameter(1, name='log_m_0_minus_m_f')
 
         self.vmax = cp.Parameter(1, name='v_max', nonneg=True)
 
@@ -49,6 +61,11 @@ class Problem:
         self.c = cp.Parameter(3, name='c')
         
         self.z0 = cp.Parameter((1, N), name='z_0', nonneg=True)
+        self.mass_quad = cp.Parameter((1, N), name='mass_quad', nonneg=True)
+        self.mass_lin = cp.Parameter((1, N), name='mass_lin')
+        self.mass_const_lower = cp.Parameter((1, N), name='mass_const_lower')
+        self.mass_upper_lin = cp.Parameter((1, N), name='mass_upper_lin')
+        self.mass_upper_const = cp.Parameter((1, N), name='mass_upper_const')
 
         self.cons = []
 
@@ -57,8 +74,8 @@ class Problem:
             self.x[0:3, 0] == self.r0,
             self.x[3:6, 0] == self.v0,
 
-            self.z[:, 0] == cp.log(self.m0),
-            self.z[:, -1] >= cp.log(self.m0 - self.mf),
+            self.z[:, 0] == self.log_m0,
+            self.z[:, -1] >= self.log_m0_mf,
 
             self.x[0, -1] == self.q[0],
             self.x[3:6, -1] == self.vf,
@@ -97,13 +114,21 @@ class Problem:
 
             # Mass-Thrust constraints
             if k > 0:
+                # Precomputed coefficients replace rho*exp(-z0)*(1 - z + z0 + 0.5*(z - z0)^2) so the constraint remains DPP-compatible for cvxpygen.
+                lower_bound = self.mass_quad[:, k] * cp.square(self.z[:, k]) + self.mass_lin[:, k] * self.z[:, k] + self.mass_const_lower[:, k]
+                upper_bound = self.mass_upper_lin[:, k] * self.z[:, k] + self.mass_upper_const[:, k]
                 self.cons += [
-                    self.s[:, k] >= self.rho1 * cp.exp(-self.z0[:, k]) * ( 1 - self.z[:, k] + self.z0[:, k] + cp.square(self.z[:, k] - self.z0[:, k]) / 2),
-                    self.s[:, k] <= self.rho2 * cp.exp(-self.z0[:, k]) * ( 1 - self.z[:, k] + self.z0[:, k] ),
+                    lower_bound <= self.s[:, k],
+                    self.s[:, k] <= upper_bound,
                 ]
-                                                 
-            
 
+    def _clear_parameter_sparsity(self, prob):
+        """Reset parameter sparsity hints to avoid cvxpygen incompatibilities."""
+        _ensure_cvxpygen_compat()
+        for param in prob.parameters():
+            attrs = getattr(param, 'attributes', None)
+            if isinstance(attrs, dict) and 'sparsity' in attrs:
+                attrs['sparsity'] = None
 
     def value(self, r0, q, v0, vf, g, g0, m0, mf, vmax, rho1, rho2, alpha, theta, gamma_gs):
         self.r0.value = r0
@@ -115,6 +140,8 @@ class Problem:
         assert m0 - mf > 0, 'm0 must be greater than mf'
         self.m0.value = np.array([m0])
         self.mf.value = np.array([mf])
+        self.log_m0.value = np.array([np.log(m0)])
+        self.log_m0_mf.value = np.array([np.log(m0 - mf)])
         self.vmax.value = np.array([vmax])
         assert rho1 < rho2, 'rho1 must be less than rho2'
         self.rho1.value = np.array([rho1])
@@ -131,6 +158,15 @@ class Problem:
             #z0[0, k] = np.log(m0 - alpha * (rho1 + rho2) * 0.5 * k * self.dt)
             z0[0, k] = np.log(m0 - alpha * rho2 * k * self.dt)
         self.z0.value = z0
+        exp_neg_z0 = np.exp(-z0)
+        rho1_exp = self.rho1.value * exp_neg_z0
+        rho2_exp = self.rho2.value * exp_neg_z0
+        # Expanding rho*exp(-z0)*(1 - z + z0 + 0.5*(z - z0)^2) (and its upper bound) moves parameter dependence into coefficients so the problem stays DPP-valid.
+        self.mass_quad.value = 0.5 * rho1_exp
+        self.mass_lin.value = -rho1_exp * (1 + z0)
+        self.mass_const_lower.value = rho1_exp * (1 + z0 + 0.5 * np.square(z0))
+        self.mass_upper_lin.value = -rho2_exp
+        self.mass_upper_const.value = rho2_exp * (1 + z0)
         
     def info(self):
         p = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
@@ -147,12 +183,15 @@ class Problem:
     def solve(self, solver = cp.SCS):
         self.constraints()
         prob = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
+        self._clear_parameter_sparsity(prob)
         prob.solve(solver, verbose = True)
         return prob.status, self.x.value, self.u.value, self.z.value, self.s.value
 
     def problem(self):
         self.constraints()
-        return cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
+        prob = cp.Problem(cp.Minimize(cp.norm(self.x[0:3,-1] - self.q)), self.cons)
+        self._clear_parameter_sparsity(prob)
+        return prob
 
     def data(self, solver = cp.ECOS):
         p = self.problem()
